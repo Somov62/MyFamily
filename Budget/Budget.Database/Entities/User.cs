@@ -27,6 +27,9 @@ namespace Budget.Database.Entities
         /// </summary>
         public int FamilyId { get; set; }
 
+        /// <summary>
+        /// Транзакции пользователя
+        /// </summary>
         public IList<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }
