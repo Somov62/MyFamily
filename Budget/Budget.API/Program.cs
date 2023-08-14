@@ -1,4 +1,6 @@
+using Budget.API.Handler;
 using Budget.Database;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -25,7 +27,7 @@ namespace Budget.API
             //app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseAuthentication();
 
             app.MapControllers();
 
@@ -37,6 +39,7 @@ namespace Budget.API
             builder.Services.AddControllers().AddJsonOptions(p => p.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddAuthentication("EfAuth").AddScheme<AuthenticationSchemeOptions, EfAuthenticationHandler>("EfAuth", null);
 
             builder.Services.Configure<ApiBehaviorOptions>(o =>
             {
