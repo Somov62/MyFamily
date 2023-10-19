@@ -56,9 +56,8 @@ namespace Budget.Database
             builder.Entity<Family>().Navigation(p => p.Relatives).AutoInclude();
             builder.Entity<Family>().Navigation(p => p.Categories).AutoInclude();
 
-
             //Конфигурация таблицы пользователей
-            builder.Entity<User>().HasIndex(nameof(User.Login)).IsUnique();
+            builder.Entity<User>().HasIndex(nameof(User.Name)).IsUnique();
 
             builder.Entity<User>()
                 .HasMany(p => p.Transactions)

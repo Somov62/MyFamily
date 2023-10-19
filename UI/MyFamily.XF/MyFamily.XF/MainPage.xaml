@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="MyFamily.XF.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MyFamily.XF"
+    Title="Новая операция"
+    Appearing="ContentPage_Appearing">
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="TextColor" Value="#e5e5e5" />
+            <Setter Property="Margin" Value="0,0,0,-5" />
+        </Style>
+        <Style TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="#555555" />
+            <Setter Property="TextColor" Value="#d1d1d1" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+            <Setter Property="Keyboard" Value="Chat" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Green" />
+            <Setter Property="TextColor" Value="#e5e5e5" />
+        </Style>
+    </ContentPage.Resources>
+    <ScrollView>
+        <StackLayout Margin="15">
+            <!--  Дата и время  -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackLayout>
+                    <Label Text="Дата:" />
+                    <DatePicker Date="{Binding TransactionTemplate.Date, Mode=TwoWay}" TextColor="#e5e5e5" />
+                </StackLayout>
+                <StackLayout Grid.Column="1">
+                    <Label Text="Время:" />
+                    <TimePicker TextColor="#e5e5e5" Time="{Binding Time, Mode=TwoWay}" />
+                </StackLayout>
+            </Grid>
+
+            <!--  Сумма  -->
+            <Label Text="Сумма в рублях:" />
+            <Entry Keyboard="Numeric" Text="{Binding Amount}" />
+
+            <!--  Тип операции  -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <RadioButton
+                    x:Name="rbExpense"
+                    Content="Расход"
+                    IsChecked="{Binding IsExpensive, Mode=TwoWay}"
+                    TextColor="#e5e5e5" />
+                <RadioButton
+                    Grid.Column="1"
+                    Content="Пополнение"
+                    TextColor="#e5e5e5" />
+            </Grid>
+
+            <!--  Категории  -->
+            <StackLayout IsVisible="{Binding Source={x:Reference rbExpense}, Path=IsChecked}">
+                <Label Text="Категория:" />
+                <Label
+                    FontSize="12"
+                    Text="(введи новую или выбери существующую по кнопке)"
+                    TextColor="#888888" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <Entry Placeholder="новая категория" Text="{Binding Category}" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding SelectCategoryCommand}"
+                        Text="^" />
+                </Grid>
+                <Label Text="Подкатегория:" />
+                <Label
+                    FontSize="12"
+                    Text="(введи новую или выбери существующую по кнопке)"
+                    TextColor="#888888" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <Entry Placeholder="новая подкатегория" Text="{Binding SubCategory}" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding SelectSubCategoryCommand}"
+                        Text="^" />
+                </Grid>
+            </StackLayout>
+
+            <!--  Название  -->
+            <Label Text="Краткое название транзакции:" />
+            <Label
+                FontSize="12"
+                Text="(что купили/место покупки/откуда пополнение и т.д)"
+                TextColor="#888888" />
+            <Entry Text="{Binding TransactionTemplate.Name}" />
+
+            <!--  Описание  -->
+            <Label Text="Поле для подробного описания:" />
+            <Label
+                FontSize="12"
+                Text="(заполнять по необходимости)"
+                TextColor="#888888" />
+            <Entry Text="{Binding TransactionTemplate.Description}" />
+
+            <Button Command="{Binding SaveCommand}" Text="Сохранить" Margin="0, 10, 0, 0"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

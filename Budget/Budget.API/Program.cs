@@ -63,10 +63,10 @@ namespace Budget.API
             builder.Services.AddDbContext<BudgetDbContext>(
                 opt =>
                 {
-                    opt.UseNpgsql(builder.Configuration.GetConnectionString("Data"),
+                    opt.UseSqlServer(builder.Configuration.GetConnectionString("Data"),
                         o => o.MigrationsAssembly("Budget.Database"));
                     //opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-                    opt.EnableSensitiveDataLogging();
+                    //opt.EnableSensitiveDataLogging();
                 });
         }
     }

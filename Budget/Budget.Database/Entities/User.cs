@@ -8,11 +8,6 @@ namespace Budget.Database.Entities
     public class User : NamedEntity
     {
         /// <summary>
-        /// Уникальный логин пользователя.
-        /// </summary>
-        public string Login { get; set; }
-
-        /// <summary>
         /// Зашированный md5 пароль пользователя.
         /// </summary>
         public string Password { get; set; }
