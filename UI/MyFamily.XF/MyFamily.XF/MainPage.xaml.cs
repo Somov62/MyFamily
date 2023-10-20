@@ -10,18 +10,20 @@ namespace MyFamily.XF
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        public MainPage() => InitializeComponent();
+
+        private  void ContentPage_Appearing(object sender, EventArgs e)
         {
-            InitializeComponent();
+            //var readStorage= await Permissions.RequestAsync<Permissions.StorageRead>();
+            //var writeStorage = await Permissions.RequestAsync<Permissions.StorageWrite>();
+            //if (readStorage == PermissionStatus.Granted && writeStorage == PermissionStatus.Granted)
+            {
+                BindingContext = new MainPageModel(this);
+                OnPropertyChanged(nameof(BindingContext));
+            }
         }
 
-        private async void ContentPage_Appearing(object sender, EventArgs e)
-        {
-            await Permissions.RequestAsync<Permissions.StorageWrite>();
-            
-            BindingContext = new MainPageModel(this);
-            OnPropertyChanged(nameof(BindingContext));
-        }
+       
     }
 
     public sealed class MainPageModel : INotifyPropertyChanged
@@ -38,7 +40,7 @@ namespace MyFamily.XF
                 Date = DateTime.Now
             };
 
-            SelectCategoryCommand = new Command(async() =>
+            SelectCategoryCommand = new Command(async () =>
             {
                 var action = await owner.DisplayActionSheet("Категория", "Отмена", "", categories.Select(p => p.Item1).ToArray());
                 var selected = categories.FirstOrDefault(p => p.Item1 == action);
@@ -62,10 +64,10 @@ namespace MyFamily.XF
                 var action = await owner.DisplayActionSheet("Подкатегория", "Отмена", "", currentCategory.Item2.ToArray());
                 if (!currentCategory.Item2.Contains(action))
                     return;
-    
+
                 SubCategory = action;
                 DoPropertyChanged(nameof(TransactionTemplate.SubCategory));
-                
+
             });
 
             SaveCommand = new Command(() =>
@@ -73,7 +75,7 @@ namespace MyFamily.XF
                 if (!string.IsNullOrWhiteSpace(Category))
                 {
                     if (!categories.Select(p => p.Item1).Contains(Category))
-                        excelService.AddCategory(Category); 
+                        excelService.AddCategory(Category);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Category))
@@ -85,7 +87,7 @@ namespace MyFamily.XF
                             excelService.AddSubCategory(Category, SubCategory);
                     }
                     else
-                        excelService.AddSubCategory(Category, SubCategory); 
+                        excelService.AddSubCategory(Category, SubCategory);
                 }
 
                 TransactionTemplate.Category = Category;
@@ -95,8 +97,8 @@ namespace MyFamily.XF
                 {
                     TransactionTemplate.Amount = Math.Abs(TransactionTemplate.Amount) * (-1);
                 }
-                TransactionTemplate.Date.AddSeconds(Time.TotalSeconds); 
-                
+                TransactionTemplate.Date.AddSeconds(Time.TotalSeconds);
+
                 excelService.InsertDataIntoTransactionsSheet(TransactionSheetStructure.Get(TransactionTemplate));
                 owner.DisplayAlert("", "Сохранено!", "ОK");
                 categories = excelService.GetCategories();
@@ -127,7 +129,7 @@ namespace MyFamily.XF
         public decimal? Amount { get; set; }
 
         private string _category;
-        public string Category 
+        public string Category
         {
             get => _category;
             set

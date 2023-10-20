@@ -1,41 +1,53 @@
 ﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
+using MyFamily.XF.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Xamarin.Forms.Internals;
+using Xamarin.Forms;
+using Cell = DocumentFormat.OpenXml.Spreadsheet.Cell;
 
 namespace MyFamily.XF.Database.Excel
 {
+    /// <summary>
+    /// Сервис для работы с экселем
+    /// </summary>
     internal class ExcelService
     {
-        private string Folder { get; } = "/storage/emulated/0/ExcelBudget";
-        private string FileName { get; } = "/storage/emulated/0/ExcelBudget/Transactions.xlsx";
-
+        /// <summary>
+        /// Конструктор по умолчанию
+        /// </summary>
         public ExcelService()
         {
-            if (!File.Exists(FileName))
+            var externalStoragePath = DependencyService.Get<IPathService>().PublicExternalFolder;
+            FolderPath = Path.Combine(externalStoragePath, "ExcelBudget");
+            FilePath = Path.Combine(FolderPath, "Transactions.xlsx");
+            if (!File.Exists(FilePath))
                 GenerateExcel();
         }
 
+        /// <summary>
+        /// Путь к папке
+        /// </summary>
+        private string FolderPath { get; }
+        /// <summary>
+        /// Путь к файлу
+        /// </summary>
+        private string FilePath { get; }
 
+        #region methods
         private string GenerateExcel()
         {
-            if (!Directory.Exists(Folder))
-                Directory.CreateDirectory(Folder);
+            if (!Directory.Exists(FolderPath))
+                Directory.CreateDirectory(FolderPath);
 
             Environment.SetEnvironmentVariable("MONO_URI_DOTNETRELATIVEORABSOLUTE", "true");
 
             // Creating the SpreadsheetDocument in the indicated FilePath
-            var filePath = FileName;
-            using (var document = SpreadsheetDocument.Create(FileName, SpreadsheetDocumentType.Workbook))
+            var filePath = FilePath;
+            using (var document = SpreadsheetDocument.Create(FilePath, SpreadsheetDocumentType.Workbook))
             {
                 var wbPart = document.AddWorkbookPart();
                 wbPart.Workbook = new Workbook();
@@ -94,7 +106,7 @@ namespace MyFamily.XF.Database.Excel
         {
             Environment.SetEnvironmentVariable("MONO_URI_DOTNETRELATIVEORABSOLUTE", "true");
 
-            using (var document = SpreadsheetDocument.Open(FileName, true))
+            using (var document = SpreadsheetDocument.Open(FilePath, true))
             {
                 var wbPart = document.WorkbookPart;
                 var part = wbPart.WorksheetParts.ToList()[0];
@@ -115,9 +127,9 @@ namespace MyFamily.XF.Database.Excel
 
         public List<(string, List<string>)> GetCategories()
         {
-            Environment.SetEnvironmentVariable("MONO_URI_DOTNETRELATIVEORABSOLUTE", "true");
+            //Environment.SetEnvironmentVariable("MONO_URI_DOTNETRELATIVEORABSOLUTE", "true");
 
-            using (var document = SpreadsheetDocument.Open(FileName, true))
+            using (var document = SpreadsheetDocument.Open(FilePath, true))
             {
                 var wbPart = document.WorkbookPart;
                 var part = wbPart.WorksheetParts.ToList()[1];
@@ -139,13 +151,13 @@ namespace MyFamily.XF.Database.Excel
         {
             Environment.SetEnvironmentVariable("MONO_URI_DOTNETRELATIVEORABSOLUTE", "true");
 
-            using (var document = SpreadsheetDocument.Open(FileName, true))
+            using (var document = SpreadsheetDocument.Open(FilePath, true))
             {
                 var wbPart = document.WorkbookPart;
                 var part = wbPart.WorksheetParts.ToList()[1];
                 var sheetData = part.Worksheet.Elements<SheetData>().First();
 
-                var row= new Row();
+                var row = new Row();
                 row = sheetData.InsertAt(row, 0);
                 row.Append(new Cell() { CellValue = new CellValue(category), DataType = CellValues.String });
                 wbPart.Workbook.Save();
@@ -156,7 +168,7 @@ namespace MyFamily.XF.Database.Excel
         {
             Environment.SetEnvironmentVariable("MONO_URI_DOTNETRELATIVEORABSOLUTE", "true");
 
-            using (var document = SpreadsheetDocument.Open(FileName, true))
+            using (var document = SpreadsheetDocument.Open(FilePath, true))
             {
                 var wbPart = document.WorkbookPart;
                 var part = wbPart.WorksheetParts.ToList()[1];
@@ -174,8 +186,7 @@ namespace MyFamily.XF.Database.Excel
                 }
                 wbPart.Workbook.Save();
             }
-        }
-
-        
+        } 
+        #endregion
     }
 }
